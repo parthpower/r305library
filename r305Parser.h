@@ -1,4 +1,4 @@
-//enum bool {True=0,False=1};
+
 typedef unsigned char uint8_t;
 typedef unsigned short int uint16_t;
 typedef unsigned int uint32_t;

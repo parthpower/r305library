@@ -1,13 +1,20 @@
-
+// Typedefs for uint* types
 typedef unsigned char uint8_t;
 typedef unsigned short int uint16_t;
 typedef unsigned int uint32_t;
+
+// Default settings
+#define	DEFAULT_ADDRESS		0xFFFFFFFF
+#define DEFAULT_PWD			0xFFFFFFFF
+#define DEFAULT_HEADER		0xEF01
+
+// Package types PID
 #define COMMAND_PACKAGE	0x01
 #define DATA_PACKAGE 	0x02
 #define ACK_PACKAGE		0x07
 #define EOD_PACKAGE		0x08
 
-// ACK bytecode definition
+// ACK error code definition
 #define ACK_COMMAND_EXEC_COMPLETE		0X00
 #define	ACK_ERROR_RECEIVING_DATA		0X01
 #define	ACK_NO_FINGER_ON_SENSOR			0X02
@@ -32,13 +39,7 @@ typedef unsigned int uint32_t;
 #define ACK_WRONG_PAGE_NO				0X1C
 #define ACK_COM_PORT_FALIURE			0x1D
 
-// Defaults
-#define	DEFAULT_ADDRESS		0xFFFFFFFF
-#define DEFAULT_PWD			0xFFFFFFFF
-#define DEFAULT_HEADER		0xEF01
-
 // Standard Package Length Parameter
-
 // For Command package
 #define	LEN_COMMAND_GEN_IMG			0X0003
 #define	LEN_COMMAND_IMG2TZ			0X0004
@@ -128,18 +129,29 @@ typedef struct {
 	uint16_t checksum;
 	//Helper data
 	uint16_t package_size; // Total count of bytes in a package
-	uint8_t package_string[256];	// Package in from array of bytes (Most significant byte first
+	uint8_t package_string[256];// Package in from array of bytes (Most significant byte first)
 	uint8_t ack_command_code;	// Command or ACK code
 	uint8_t data_size;			// Size of data in a package
 } data_package;
 
-data_package getBasePackage(uint8_t, uint16_t, uint8_t*);
-data_package getEmptyPackage(uint8_t);
-data_package getAckPackage();
+data_package getBasePackage(uint8_t, uint16_t, uint8_t*); // Arguments are PID, length,data array
+data_package getDefaultPackage(uint8_t);	//Returns package with specified PID
+data_package getAckPackage();//Returns default package with PID 0x07 for ACK package (can be useful for emulation)
 data_package getCommandPackage(uint16_t, uint8_t*);
-uint16_t setChecksum(data_package*);
-uint32_t setPackageSize(data_package*);
-uint8_t* stringyfyPackage(data_package*);
-uint8_t loadPackage(uint8_t*, data_package*);
+//Returns default package with PID 0x01 for command package
+//first argument is for length parameter look for LEN_COMMAND_*
+
+uint16_t setChecksum(data_package*);//Sets the checksum parameter of the package and returns the checksum
+uint32_t setPackageSize(data_package*);	//Sets the package_size parameter of the package and returns the size of the package string
+uint8_t* stringyfyPackage(data_package*);//Sets the package_string parameter of the package and return the byte string of the whole package
+uint8_t loadPackage(uint8_t*, data_package*);//load package structure from string.
+
 void sendPackage(data_package *, void (*Write_fn)(uint8_t*, uint32_t));
+// The argument Write_fn should be a function with arguments (uint8_t*,uint32_t) of which
+// First argument is array of bytes to be sent using that function.
+// Second argument is the size of the array.
+
 int recvPackage(data_package *, uint16_t, void (*Read_Fn)(uint8_t*, uint32_t));
+// The argument Read_fn should be a function with arguments (uint8_t*,uint32_t) of which
+// First argument is array of bytes to be received using that function
+// Second argument is the size of the array.

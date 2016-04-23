@@ -4,7 +4,7 @@
 data_package getBasePackage(uint8_t pid, uint16_t length, uint8_t* data) {
 	uint16_t i = 0;
 
-	data_package package = getEmptyPackage(pid);
+	data_package package = getDefaultPackage(pid);
 	package.length = length;
 	package.data_size = package.length - sizeof(package.checksum);
 	for (i = 0; i < package.data_size; i++) {
@@ -18,7 +18,7 @@ data_package getBasePackage(uint8_t pid, uint16_t length, uint8_t* data) {
 	return package;
 }
 
-data_package getEmptyPackage(uint8_t pid) {
+data_package getDefaultPackage(uint8_t pid) {
 	data_package package;
 	package.header = DEFAULT_HEADER;
 	package.address = DEFAULT_ADDRESS;
@@ -26,11 +26,11 @@ data_package getEmptyPackage(uint8_t pid) {
 	return package;
 }
 
-inline data_package getAckPackage() {
-	return getEmptyPackage(ACK_PACKAGE);
+data_package getAckPackage() {
+	return getDefaultPackage(ACK_PACKAGE);
 }
 
-inline data_package getCommandPackage(uint16_t length, uint8_t* data) {
+data_package getCommandPackage(uint16_t length, uint8_t* data) {
 	return getBasePackage(COMMAND_PACKAGE, length, data);
 
 }
@@ -74,6 +74,7 @@ uint8_t* stringyfyPackage(data_package *package) {
 	package->package_string[i + 10] = package->checksum;
 	return package->package_string;
 }
+
 // Argument: data_package *package is the output 
 // Must call it as loadPackage(someBuffer,&receivedPackage)
 uint8_t loadPackage(uint8_t* package_string, data_package *package) {
@@ -109,12 +110,18 @@ uint8_t loadPackage(uint8_t* package_string, data_package *package) {
 
 }
 
+// The argument Write_fn should be a function with arguments (uint8_t*,uint32_t) of which
+// First argument is array of bytes to be sent using that function.
+// Second argument is the size of the array.
 void sendPackage(data_package *package, void (*Write_fn)(uint8_t*, uint32_t)) {
 	setChecksum(package);
 	setPackageSize(package);
 	Write_fn(package->package_string, package->package_size);
 }
 
+// The argument Read_fn should be a function with arguments (uint8_t*,uint32_t) of which
+// First argument is array of bytes to be received using that function
+// Second argument is the size of the array.
 int recvPackage(data_package *package, uint16_t size,
 		void (*Read_fn)(uint8_t*, uint32_t)) {
 	uint8_t tmp_package_string[256];

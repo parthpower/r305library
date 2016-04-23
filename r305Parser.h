@@ -127,10 +127,10 @@ typedef struct {
 	uint8_t data[256];
 	uint16_t checksum;
 	//Helper data
-	uint16_t package_size;
-	uint8_t package_string[256];
-	uint8_t ack_command_code;
-	uint8_t data_size;
+	uint16_t package_size; // Total count of bytes in a package
+	uint8_t package_string[256];	// Package in from array of bytes (Most significant byte first
+	uint8_t ack_command_code;	// Command or ACK code
+	uint8_t data_size;			// Size of data in a package
 } data_package;
 
 data_package getBasePackage(uint8_t, uint16_t, uint8_t*);

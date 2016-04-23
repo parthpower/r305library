@@ -1,3 +1,4 @@
+#include <string.h>
 #include "r305Parser.h"
 
 data_package getBasePackage(uint8_t pid, uint16_t length, uint8_t* data) {
@@ -87,7 +88,7 @@ uint8_t loadPackage(uint8_t* package_string, data_package *package) {
 	package->length = (uint16_t) package_string[7] << 8
 			| (uint16_t) package_string[8];
 
-	for (i = 0; i < package->length; i++) {
+	for (i = 0; i < package->length - sizeof(package->checksum); i++) {
 		//UART reads Highest byte first
 		// package->length - sizeof(package->checksum) -1 to get the highest byte
 		package->data[package->length - sizeof(package->checksum) - 1 - i] =
@@ -95,7 +96,7 @@ uint8_t loadPackage(uint8_t* package_string, data_package *package) {
 	}
 	setChecksum(package);
 	setPackageSize(package);
-	stringyfyPackage(package); //Maybe use strcpy here
+	memcpy(package->package_string, package_string, package->package_size);
 	package->data_size = package->length - sizeof(package->checksum);
 	package->ack_command_code = package->data[package->data_size];
 

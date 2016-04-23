@@ -23,7 +23,7 @@ int main(int argc, char const *argv[]) {
 	data_package rxPackage;
 	uint8_t tmp[] = {COMMAND_VFY_PWD, 0xff, 0xff, 0xff, 0xff };
 	txPackage = getCommandPackage(LEN_COMMAND_VFY_PWD, tmp);
-
+	printf("Test Pass if all the outputs from below looks the exact same\n");
 	for (i = 0; i < txPackage.package_size; i++) {
 		printf("%.2x ", txPackage.package_string[i]);
 	}

@@ -1,19 +1,42 @@
+/**
+ * \file
+ * \brief Header for r305Parser
+ *
+ */
 // Typedefs for uint* types
-typedef unsigned char uint8_t;
-typedef unsigned short int uint16_t;
-typedef unsigned int uint32_t;
+//typedef unsigned char uint8_t;
+//typedef unsigned short int uint16_t;
+//typedef unsigned int uint32_t;
+#include <inttypes.h>
+
+/**
+ * \addtogroup DefaultSettings
+ * \brief Default settings of r305 module
+ * @{
+ */
 
 // Default settings
-#define	DEFAULT_ADDRESS		0xFFFFFFFF
-#define DEFAULT_PWD			0xFFFFFFFF
-#define DEFAULT_HEADER		0xEF01
-
+#define	DEFAULT_ADDRESS		0xFFFFFFFF	///<Default address
+#define DEFAULT_PWD			0xFFFFFFFF	///<Default password
+#define DEFAULT_HEADER		0xEF01		///<Default header
+/**@}*/
+/**
+ * \addtogroup PID
+ * \brief PID for the package types
+ * @{
+ */
 // Package types PID
 #define COMMAND_PACKAGE	0x01
 #define DATA_PACKAGE 	0x02
 #define ACK_PACKAGE		0x07
 #define EOD_PACKAGE		0x08
+/**@} */
 
+/**
+ * \addtogroup ACKErrorCodes
+ * \brief Error codes for ACK packages.
+ * @{
+ */
 // ACK error code definition
 #define ACK_COMMAND_EXEC_COMPLETE		0X00
 #define	ACK_ERROR_RECEIVING_DATA		0X01
@@ -38,9 +61,19 @@ typedef unsigned int uint32_t;
 #define ACK_INCORRECT_REG_CONFIG		0X1B
 #define ACK_WRONG_PAGE_NO				0X1C
 #define ACK_COM_PORT_FALIURE			0x1D
-
+/**@} */
 // Standard Package Length Parameter
+/**
+ * \addtogroup Length
+ * \brief Standard Package Lengths
+ * @{
+ */
 // For Command package
+/**
+ * \addtogroup LengthCommand
+ * \brief Lengths of Command Packages
+ * @{
+ */
 #define	LEN_COMMAND_GEN_IMG			0X0003
 #define	LEN_COMMAND_IMG2TZ			0X0004
 #define	LEN_COMMAND_MATCH			0X0003
@@ -65,7 +98,13 @@ typedef unsigned int uint32_t;
 #define	LEN_COMMAND_READ_NOTEPAD	0X0004
 //#define	LEN_COMMAND_HI_SPEED_SEARCH	0X00; Not in datasheet
 #define	LEN_COMMAND_TEMPLETE_NUM	0X0003
+/**@} */
 
+/**
+ * \addtogroup LengthACK
+ * \brief Lengths of ACK packages.
+ * @{
+ */
 // For Acknowledge	package
 #define	LEN_ACK_GEN_IMG			0X0003
 #define	LEN_ACK_IMG2TZ			0X0003
@@ -91,9 +130,14 @@ typedef unsigned int uint32_t;
 #define	LEN_ACK_READ_NOTEPAD	0X0023
 //#define	LEN_ACK_HI_SPEED_SEARCH	0X00; Not in datasheet
 #define	LEN_ACK_TEMPLETE_NUM	0X0005
-//......
-
+/**@} */
+/**@} */
 // Instruction Codes
+/**
+ *	\addtogroup InstructionCodes
+ *	\brief Command Codes
+ *	@{
+ */
 #define	COMMAND_GEN_IMG			0X01
 #define	COMMAND_IMG2TZ			0X02
 #define	COMMAND_MATCH			0X03
@@ -118,40 +162,48 @@ typedef unsigned int uint32_t;
 #define	COMMAND_READ_NOTEPAD	0X19	
 #define	COMMAND_HI_SPEED_SEARCH	0X1B
 #define	COMMAND_TEMPLETE_NUM	0X1D
+/**
+ *@}
+ */
+/**
+ * \struct data_package
+ * \brief Package structure
+ */
+typedef struct data_package {
+	uint16_t header; ///<Header of Package. Default value define \link DEFAULT_HEADER \endlink
+	uint32_t address;	///<Address of the module
+	uint8_t pid;///<PID of package to determine type of package use \link PID \endlink
+	uint16_t length;///<length of data+checksum (length parameter) use \link Length \endlink
+	uint8_t data[256];	///<data of the package
+	uint16_t checksum;	///<checksum
 
-typedef struct {
-	//package data
-	uint16_t header;
-	uint32_t address;
-	uint8_t pid;
-	uint16_t length;
-	uint8_t data[256];
-	uint16_t checksum;
-	//Helper data
-	uint16_t package_size; // Total count of bytes in a package
-	uint8_t package_string[256];// Package in from array of bytes (Most significant byte first)
-	uint8_t ack_command_code;	// Command or ACK code
-	uint8_t data_size;			// Size of data in a package
+	uint16_t package_size; ///<Total count of bytes in a package
+	uint8_t package_string[256]; ///<Package in from array of bytes (Most significant byte first)
+	uint8_t ack_command_code;	///<Command or ACK code
+	uint8_t data_size;			///<Size of data in a package
 } data_package;
 
-data_package getBasePackage(uint8_t, uint16_t, uint8_t*); // Arguments are PID, length,data array
-data_package getDefaultPackage(uint8_t);	//Returns package with specified PID
+data_package getBasePackage(uint8_t pid, uint16_t length, uint8_t* data); // Arguments are PID, length,data array
+
+data_package getDefaultPackage(uint8_t pid);//Returns package with specified PID
+
 data_package getAckPackage();//Returns default package with PID 0x07 for ACK package (can be useful for emulation)
-data_package getCommandPackage(uint16_t, uint8_t*);
+data_package getCommandPackage(uint16_t length, uint8_t* data);
 //Returns default package with PID 0x01 for command package
 //first argument is for length parameter look for LEN_COMMAND_*
 
-uint16_t setChecksum(data_package*);//Sets the checksum parameter of the package and returns the checksum
-uint32_t setPackageSize(data_package*);	//Sets the package_size parameter of the package and returns the size of the package string
-uint8_t* stringyfyPackage(data_package*);//Sets the package_string parameter of the package and return the byte string of the whole package
-uint8_t loadPackage(uint8_t*, data_package*);//load package structure from string.
+uint16_t autoSetChecksum(data_package *package);//Sets the checksum parameter of the package and returns the checksum
+uint32_t autoSetPackageSize(data_package *package);	//Sets the package_size parameter of the package and returns the size of the package string
+uint8_t* stringyfyPackage(data_package *package);//Sets the package_string parameter of the package and return the byte string of the whole package
+uint8_t loadPackage(uint8_t *package_string, data_package *package);//load package structure from string.
 
-void sendPackage(data_package *, void (*Write_fn)(uint8_t*, uint32_t));
+void sendPackage(data_package *package, void (*Write_fn)(uint8_t*, uint32_t));
 // The argument Write_fn should be a function with arguments (uint8_t*,uint32_t) of which
 // First argument is array of bytes to be sent using that function.
 // Second argument is the size of the array.
 
-int recvPackage(data_package *, uint16_t, void (*Read_Fn)(uint8_t*, uint32_t));
+int recvPackage(data_package *package, uint16_t,
+		void (*Read_Fn)(uint8_t*, uint32_t));
 // The argument Read_fn should be a function with arguments (uint8_t*,uint32_t) of which
 // First argument is array of bytes to be received using that function
 // Second argument is the size of the array.

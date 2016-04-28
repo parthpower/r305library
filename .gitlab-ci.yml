@@ -1,5 +1,5 @@
 before_script:
- - apt-get update -qq && apt-get install -y -qq doxygen avr-libc gcc-avr binutils-avr mingw32
+ - apt-get update -qq && apt-get install -y -qq doxygen avr-libc gcc-avr binutils-avr mingw32 mingw-w64
 
  
 r305library:
@@ -8,7 +8,7 @@ r305library:
 
 test_exe:
  script:
-  make test_exe
+  make test_exe_ci
  artifacts:
    untracked: true
 

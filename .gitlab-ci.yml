@@ -10,7 +10,7 @@ test_exe:
  script:
   make test_exe_ci
  artifacts:
-   untracked:true
+   untracked: true
 
 test_avr:
  script:

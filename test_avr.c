@@ -1,6 +1,12 @@
 #include <avr/io.h>
 #include <inttypes.h>
 #include "r305Parser.h"
+void UARTInit(uint16_t ubrr_value);
+uint8_t UARTReadChar();
+void UARTWriteChar(uint8_t data);
+void UARTReadStr(uint8_t *buffer,uint32_t size);
+void UARTWriteStr(uint8_t* buffer,uint32_t size);
+
 void UARTInit(uint16_t ubrr_value)
 {
 
@@ -21,7 +27,6 @@ void UARTInit(uint16_t ubrr_value)
 uint8_t UARTReadChar()
 {
    while(!(UCSRA & (1<<RXC)));
-   global_readcount++;
    return UDR;
 }
 
@@ -34,26 +39,26 @@ void UARTWriteChar(uint8_t data)
 void UARTReadStr(uint8_t *buffer,uint32_t size){
    uint32_t i=0;
    for(i=0;i<size;i++){
-      buffer[i] = USARTReadChar();
+      buffer[i] = UARTReadChar();
    }
 }
 
 void UARTWriteStr(uint8_t* buffer,uint32_t size){
    uint32_t i=0;
    for(i=0;i<size;i++){
-      USARTReadChar(buffer[i]);
+      UARTReadChar(buffer[i]);
    }
 }
 
-void main()
+int main()
 {
    char data;
    data_package rxPackage,txPacakage;
    //for verify pwd
-   char vfyPwdFormat = {COMMAND_VFY_PWD,0xff,0xff,0xff,0xff};
+   char vfyPwdFormat[] = {COMMAND_VFY_PWD,0xff,0xff,0xff,0xff};
    txPacakage = getCommandPackage(LEN_COMMAND_VFY_PWD,vfyPwdFormat);
 
-   USARTInit(12);    //UBRR = idk what's the exact value just calculate and do, it's 12 I think
+   UARTInit(12);    //UBRR = idk what's the exact value just calculate and do, it's 12 I think
 
    while(1)
    {
@@ -64,4 +69,5 @@ void main()
 		 // DO SOMETHING HERE TO SHOW SUCESS
       }
    }
+   return 0;
 }

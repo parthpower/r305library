@@ -1,5 +1,5 @@
 before_script:
- - apt-get update -qq && apt-get install -y -qq build-essential
+ - apt-get update -qq && apt-get install -y -qq build-essential doxygen
 
 r305library:
  script:

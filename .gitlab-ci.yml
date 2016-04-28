@@ -1,5 +1,5 @@
 before_script:
- - apt-get update -qq && apt-get install -y -qq build-essential
+ - apt-get update -qq && apt-get install -y -qq build-essential doxygen avr-libc gcc-avr binutils-avr
 
 r305library:
  script:
@@ -7,7 +7,10 @@ r305library:
 
 test_exe:
  script:
-  make
+  make test_exe
+test_avr:
+ script:
+  make test_avr
 
 doc:
  script:

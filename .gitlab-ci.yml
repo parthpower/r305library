@@ -9,7 +9,7 @@ r305library:
 test_exe:
  script:
   make test_exe_ci
-  artifacts:
+ artifacts:
    untracked:true
 
 test_avr:

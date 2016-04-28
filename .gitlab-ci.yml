@@ -9,3 +9,7 @@ test_exe:
  script:
   make
 
+doc:
+ script:
+  make doc
+ 

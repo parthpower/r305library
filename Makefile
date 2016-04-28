@@ -18,7 +18,7 @@ r305Parser:r305Parser.c
 r305Parser_avr:r305Parser.c
 	avr-gcc -mmcu=atmega32 -Os -c -g r305Parser.c
 
-r305Parser_ci:r305Parser.cat
+r305Parser_ci:r305Parser.c
 	gcc-mingw-w64 -c -g r305Parser.c
 	
 doc:doxy.Doxyfile

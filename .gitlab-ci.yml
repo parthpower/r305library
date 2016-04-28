@@ -1,11 +1,23 @@
 before_script:
- - apt-get update -qq && apt-get install -y -qq build-essential
+ - apt-get update -qq && apt-get install -y -qq doxygen avr-libc gcc-avr binutils-avr mingw32 mingw-w64
 
+ 
 r305library:
  script:
   make r305Parser
 
 test_exe:
  script:
-  make
+  make test_exe_ci
+ artifacts:
+   untracked: true
 
+test_avr:
+ script:
+  make test_avr
+ artifacts:
+   untracked: true
+
+doc:
+ script:
+  make doc

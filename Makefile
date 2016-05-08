@@ -6,6 +6,8 @@ test_exe:test.c r305Parser
 test_exe_ci: test.c r305Parser.c
 	i686-w64-mingw32-gcc r305Parser.c test.c --static -o test.exe
 
+build_test_avr: test_avr
+	avr-objcopy -O ihex test_avr.elf test_avr.hex	
 test_avr:test_avr.c r305Parser_avr
 	avr-gcc -g -mmcu=atmega32 -Os -c test_avr.c
 	avr-gcc -g -mmcu=atmega32 -o test_avr.elf test_avr.o r305Parser.o

@@ -19,7 +19,7 @@ test_avr:
  artifacts:
    untracked: true
 
-doc:
+pages:
  script:
   - apt-get install -y -qq doxygen 
   - make doc

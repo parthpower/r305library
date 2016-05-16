@@ -183,20 +183,12 @@ typedef struct data_package {
 	uint8_t data_size;			///<Size of data in a package
 } data_package;
 
-data_package getBasePackage(uint8_t pid, uint16_t length, uint8_t* data); // Arguments are PID, length,data array
-
-data_package getDefaultPackage(uint8_t pid);//Returns package with specified PID
-
-data_package getAckPackage();//Returns default package with PID 0x07 for ACK package (can be useful for emulation)
-data_package getCommandPackage(uint16_t length, uint8_t* data);
-//Returns default package with PID 0x01 for command package
-//first argument is for length parameter look for LEN_COMMAND_*
-
-uint16_t autoSetChecksum(data_package *package);//Sets the checksum parameter of the package and returns the checksum
+void getBasePackage(data_package* package, uint8_t pid, uint16_t length,
+		uint8_t* data); // Arguments are PID, length,data array
+uint16_t autoSetChecksum(data_package *package); //Sets the checksum parameter of the package and returns the checksum
 uint32_t autoSetPackageSize(data_package *package);	//Sets the package_size parameter of the package and returns the size of the package string
 uint8_t* stringyfyPackage(data_package *package);//Sets the package_string parameter of the package and return the byte string of the whole package
 uint8_t loadPackage(uint8_t *package_string, data_package *package);//load package structure from string.
-
 void sendPackage(data_package *package, void (*Write_fn)(uint8_t*, uint32_t));
 // The argument Write_fn should be a function with arguments (uint8_t*,uint32_t) of which
 // First argument is array of bytes to be sent using that function.

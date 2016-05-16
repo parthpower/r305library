@@ -13,60 +13,25 @@
  * @param data data_package::data Array of bytes to set as data of the package.
  * @return data_package structure with defaults settings and specified configurations.
  */
-data_package getBasePackage(uint8_t pid, uint16_t length, uint8_t* data) {
+void getBasePackage(data_package *package, uint8_t pid, uint16_t length,
+		uint8_t* data) {
 	uint16_t i = 0;
 
-	data_package package = getDefaultPackage(pid);
-	package.length = length;
-	package.data_size = package.length - sizeof(package.checksum);
-	for (i = 0; i < package.data_size; i++) {
-		package.data[package.data_size - i - 1] = data[i];
+	package->header = DEFAULT_HEADER;
+	package->address = DEFAULT_ADDRESS;
+
+	package->pid = pid;
+	package->length = length;
+	package->data_size = package->length - sizeof(package->checksum);
+	for (i = 0; i < package->data_size; i++) {
+		package->data[package->data_size - i - 1] = data[i];
 	}
-	autoSetChecksum(&package);
-	autoSetPackageSize(&package);
-	stringyfyPackage(&package);
-	package.ack_command_code = package.data[package.data_size];
-
-	return package;
+	autoSetChecksum(package);
+	autoSetPackageSize(package);
+	stringyfyPackage(package);
+	package->ack_command_code = package->data[package->data_size];
 }
 
-/**
- * @brief Get empty package with default settings
- * @param pid data_package::pid byte to define type of package of the package from \link PID \endlink definitions.
- * @return data_package structure with defaults settings
- */
-data_package getDefaultPackage(uint8_t pid) {
-	data_package package;
-	package.header = DEFAULT_HEADER;
-	package.address = DEFAULT_ADDRESS;
-	package.pid = pid;
-	return package;
-}
-
-/**
- * @brief Same as \link getDefaultPackage\endlink(ACK_PACKAGE)
- * @return package with default settings and empty data.
- */
-data_package getAckPackage() {
-	return getDefaultPackage(ACK_PACKAGE);
-}
-
-/**
- * @brief Get command package.
- * @param length data_package::length Parameter of package, use \link Length \endlink definitions.
- * @param data data_package::data Array of bytes to set as data of the package.
- * @return command package with default settings and specified configurations.
- */
-data_package getCommandPackage(uint16_t length, uint8_t* data) {
-	return getBasePackage(COMMAND_PACKAGE, length, data);
-
-}
-
-/**
- * @brief Calculates and sets the data_package::checksum bytes in package.
- * @param package pointer to a data_package.
- * @return Calculated checksum bytes.
- */
 uint16_t autoSetChecksum(data_package *package) {
 	uint16_t i = 0;
 	package->checksum = (uint16_t) package->pid + (uint16_t) package->length;

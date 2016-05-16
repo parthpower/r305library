@@ -1,4 +1,4 @@
-all:r305Parser test_exe test_avr 
+all:r305Parser test_exe doc build_test_avr
 
 test_exe:test.c r305Parser
 	gcc test.c r305Parser.o -g --static -o test.exe
@@ -24,5 +24,6 @@ doc:doxy.Doxyfile
 	doxygen doxy.Doxyfile
 
 clean:
-	rm *.o *.lst *.elf *.exe
+	rm *.o *.lst *.elf *.exe *.hex
+	rm -rf ./html
 

@@ -19,8 +19,15 @@ test_avr:
  artifacts:
    untracked: true
 
-doc:
+pages:
  script:
   - apt-get install -y -qq doxygen 
   - make doc
- 
+  - mkdir .public
+  - cp -r html/* .public
+  - mv .public public
+ artifacts:
+  paths:
+   - public
+ only:
+  - master

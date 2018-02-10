@@ -24,7 +24,7 @@ pages:
   - apt-get install -y -qq doxygen 
   - make doc
   - mkdir .public
-  - cp -r html/* .public
+  - cp -r docs/* .public
   - mv .public public
  artifacts:
   paths:

@@ -20,10 +20,10 @@ r305Parser:r305Parser.c
 r305Parser_avr:r305Parser.c
 	avr-gcc -mmcu=atmega32 -Os -c -g r305Parser.c
 	
-doc:doxy.Doxyfile
+docs:doxy.Doxyfile
 	doxygen doxy.Doxyfile
 
 clean:
 	rm *.o *.lst *.elf *.exe *.hex
-	rm -rf ./html
+	rm -rf ./docs
 
